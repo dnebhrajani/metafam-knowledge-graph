@@ -1,4 +1,4 @@
-# MetaFam Knowledge Graph Analysis
+# MetaFam Knowledge Graph Project
 
 ## Project Overview
 
@@ -25,7 +25,7 @@ metafam-knowledge-graph/
 
 ## Task Completion Status
 
-### Task 1: Dataset Exploration (COMPLETED)
+### Task 1: Dataset Exploration
 
 **What was completed:**
 - Comprehensive dataset loading and exploration
@@ -50,8 +50,7 @@ metafam-knowledge-graph/
 - Suspicious uniform component sizes suggest synthetic/constrained data
 - 6 universally important nodes across all centrality measures
 
-### Task 2: Community Detection (COMPLETED)
-
+### Task 2: Community Detection
 **What was completed:**
 - **Problem framing**: Explicit definition of clustering task, acknowledged genealogical ambiguity
 - **Data preparation**: Documented undirected graph conversion, edge collapse strategy
@@ -83,7 +82,7 @@ metafam-knowledge-graph/
 - **95 bridge individuals** (7.22%) identified as critical connectors
 - **FRS metric** successfully differentiates relationship types (parent-child 0.65 vs hop-count 1.0)
 
-### Task 3: Rule Mining (COMPLETED)
+### Task 3: Rule Mining
 
 **What was completed:**
 - Symbolic rule discovery using path enumeration approach

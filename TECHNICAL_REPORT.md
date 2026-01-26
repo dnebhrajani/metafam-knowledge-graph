@@ -1,9 +1,7 @@
 # MetaFam Knowledge Graph Analysis - Technical Report
 
-**Task**: Precog Recruitment - Graph Analysis Assignment  
 **Author**: Durga Nebhrajani  
 **Institution**: IIIT Hyderabad  
-**Date**: January 22, 2026  
 **Repository**: https://github.com/dnebhrajani/metafam-knowledge-graph
 
 ---
@@ -205,7 +203,7 @@ lisa5, isabella11, elias6, nico4, oskar24, selina10
 # 5. VISUALIZATIONS
 
 **Four plots created**:
-1. **Relationship distribution** (bar chart): siblingOf dominates (20.6%)
+1. **Relationship distribution** (bar chart): grandparent relations dominate (grandsonOf 814, grandfatherOf/grandmotherOf 813 each, ~5.9%)
 2. **Degree distribution** (histograms): Power-law pattern, few hubs (>60 degree)
 3. **Family hierarchy** (network graph): 7-generation structure, largest component (44 nodes)
 4. **Centrality comparison** (grouped bars): 6 universally important nodes identified
