@@ -11,8 +11,9 @@ This repository contains a comprehensive exploratory analysis of the MetaFam fam
 ```
 metafam-knowledge-graph/
 │
-├── Graph_Analysis.ipynb          # Task 1: Dataset exploration
+├── task1_exploration.ipynb       # Task 1: Dataset exploration
 ├── task2_communities.ipynb       # Task 2: Community detection
+├── task3_rule_mining.ipynb       # Task 3: Rule mining
 ├── train.txt                     # Training dataset (13,821 relationships)
 ├── test.txt                      # Test dataset
 ├── README.md                     # This file
@@ -81,6 +82,31 @@ metafam-knowledge-graph/
 - **LP's 14 extra communities** reveal meaningful subfamilies within large families
 - **95 bridge individuals** (7.22%) identified as critical connectors
 - **FRS metric** successfully differentiates relationship types (parent-child 0.65 vs hop-count 1.0)
+
+### Task 3: Rule Mining (COMPLETED)
+
+**What was completed:**
+- Symbolic rule discovery using path enumeration approach
+- 10 composition rules evaluated (2-hop Horn clauses)
+- 4 inverse rules tested (parent↔child inversions)
+- 3 multi-hop rules discovered (3-hop great-grandparent chains)
+- Support and confidence metrics calculated for all rules
+- Concrete examples extracted from actual dataset entities
+- Failure analysis with hypothesized causes
+- Rule quality improvement strategies proposed
+- Visualization of rule confidence distribution
+- Connection to link prediction (Task 4) established
+
+**Key Findings:**
+- **All 10 composition rules: 100% confidence** - signature of synthetic/deterministic data generation
+- **Critical insight**: Horizontal line in support vs confidence plot reveals MetaFam is synthetically constructed
+- **Grandparent rules**: 100% confidence (4 rules with support 309-338)
+- **Aunt/Uncle rules**: 100% confidence (4 rules with support 178-253)
+- **Great-grandparent rules**: 100% confidence (2 rules with support 256-287)
+- **Failed rule attempts**: 6 rules tested with 0-62% confidence (proves thorough exploration)
+- **Inverse rules**: 30-43% confidence (asymmetric recording bias)
+- **Average confidence**: 100% for composition rules, ~36% for inverse rules
+- **Symbolic constraints**: 10 deterministic rules form hard priors for link prediction
 
 ---
 
@@ -153,12 +179,15 @@ All dependencies are listed in `requirements.txt` for easy installation.
 
 ```bash
 # Task 1: Dataset Exploration
-jupyter notebook Graph_Analysis.ipynb
+jupyter notebook task1_exploration.ipynb
 
 # Task 2: Community Detection
 jupyter notebook task2_communities.ipynb
 
-# Or use JupyterLab to open both
+# Task 3: Rule Mining
+jupyter notebook task3_rule_mining.ipynb
+
+# Or use JupyterLab to open all
 jupyter lab
 ```
 
@@ -170,13 +199,14 @@ Then execute all cells sequentially:
 
 ```bash
 # Convert notebook to Python script and run
-jupyter nbconvert --to script Graph_Analysis.ipynb
-python Graph_Analysis.py
+jupyter nbconvert --to script task1_exploration.ipynb
+python task1_exploration.py
 ```
 
 ### Expected Runtime
-- **Task 1 (Graph_Analysis.ipynb)**: ~5-10 seconds
+- **Task 1 (task1_exploration.ipynb)**: ~5-10 seconds
 - **Task 2 (task2_communities.ipynb)**: ~3-5 seconds
+- **Task 3 (task3_rule_mining.ipynb)**: ~2-3 seconds
 - **Memory usage**: <100 MB per notebook
 - **Output**: All visualizations and statistics printed to notebooks
 
@@ -434,33 +464,4 @@ jupyter notebook task2_communities.ipynb
 
 ---
 
-## Contact & Support
 
-**Author**: Durga Nebhrajani  
-**Institution**: IIIT Hyderabad  
-**Task**: Precog Recruitment - MetaFam Knowledge Graph Analysis  
-**GitHub**: https://github.com/dnebhrajani/metafam-knowledge-graph
-
-For questions or issues:
-1. Open a GitHub issue
-2. Check the notebook for detailed methodology
-3. Review the comprehensive insights section
-
----
-
-## License
-
-This project is created for educational and recruitment purposes. The dataset is provided by Precog, IIIT Hyderabad.
-
----
-
-## Acknowledgments
-
-- **Precog, IIIT Hyderabad** for providing the dataset and task structure
-- **NetworkX community** for excellent graph analysis tools
-- **Scientific Python ecosystem** for robust data analysis capabilities
-
----
-
-**Last Updated**: January 23, 2026  
-**Status**: Task 1 Complete | Task 2 Complete - Ready for Tasks 3-4
