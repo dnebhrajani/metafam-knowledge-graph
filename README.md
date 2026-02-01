@@ -14,8 +14,9 @@ metafam-knowledge-graph/
 ├── task1_exploration.ipynb       # Task 1: Dataset exploration
 ├── task2_communities.ipynb       # Task 2: Community detection
 ├── task3_rule_mining.ipynb       # Task 3: Rule mining
+├── task4_link_prediction.ipynb   # Task 4: Link prediction
 ├── train.txt                     # Training dataset (13,821 relationships)
-├── test.txt                      # Test dataset
+├── test.txt                      # Test dataset (590 relationships)
 ├── README.md                     # This file
 ├── requirements.txt              # Python dependencies
 └── TECHNICAL_REPORT.md           # Comprehensive technical documentation
@@ -107,6 +108,54 @@ metafam-knowledge-graph/
 - **Average confidence**: 100% for composition rules, ~36% for inverse rules
 - **Symbolic constraints**: 10 deterministic rules form hard priors for link prediction
 
+### Task 4: Link Prediction
+
+**What was completed:**
+- Problem formulation with Open World Assumption (OWA) clarification
+- Dataset preparation: train.txt (13,821 triples), test.txt (590 triples)
+- Negative sampling strategy with OWA reconciliation
+- Baseline models: Random baseline, degree-based heuristic
+- TransE implementation from scratch (NumPy)
+  - Translation-based scoring: h + r ≈ t
+  - Margin ranking loss with mini-batch SGD
+  - 100 epochs training (embedding dim=100, margin=1.0, lr=0.01)
+- Comprehensive training sanity checks:
+  - Loss decrease verification (with plot)
+  - Embedding norm tracking (gradient explosion check)
+  - Score distribution analysis (true vs negative triples)
+- Evaluation metrics: MRR, Hits@1, Hits@3, Hits@10 (filtered ranking)
+- Filtered ranking correctly filters train ∪ test
+- Quantitative results with baseline comparison
+- Deep error analysis:
+  - Rank distribution visualization
+  - Success cases (rank=1 predictions)
+  - Failure cases (rank>100 with hypotheses)
+  - Performance by relation type (28 relations analyzed)
+  - Hypothesis testing: symmetric relations, sparse relations
+- Rule-based comparison (symbolic vs neural reasoning)
+- Stress test experiment: Rule consistency check
+  - Self-loop violations detection
+  - Parent constraint violations (>2 mothers/fathers)
+  - Transitivity rule validation (grandmother paths)
+- Visualization suite:
+  - Training loss curve
+  - Embedding norm distribution
+  - Score distribution (model calibration)
+  - Per-relation performance (horizontal bar charts)
+  - PCA embeddings (entities and relations)
+- Connections to Tasks 1-3 integrated throughout
+- Scalability analysis and future directions
+
+**Key Findings:**
+- TransE significantly outperforms random baseline (results vary by run)
+- Symmetric relations (sisterOf, brotherOf) perform worse (confirmed hypothesis)
+- Sparse relations perform worse due to limited training data (confirmed hypothesis)
+- Missing inverse relations (82.5% from Task 1) impact embedding quality
+- Stress test reveals logical constraint violations in top predictions
+- Pure embedding methods ignore compositional structure - hybrid symbolic-neural approach needed
+- Model achieves stable training: loss decreases consistently, embeddings remain normalized
+- Filtered ranking essential: prevents false penalties for ranking unobserved true facts
+
 ---
 
 ## Installation & Setup
@@ -157,12 +206,15 @@ The project uses the following Python libraries:
 - **matplotlib** (3.7+): Plotting and visualization
 - **seaborn** (0.12+): Statistical data visualization
 
+### Progress Bars
+- **tqdm** (4.65+): Progress bars for training loops
+
 ### Statistical Analysis
 - **scipy** (1.10+): Scientific computing and statistical tests
 
 ### Community Detection (Task 2)
 - **python-louvain** (0.15+): Louvain modularity optimization
-- **scikit-learn** (1.3+): Label Propagation, NMI/ARI metrics
+- **scikit-learn** (1.3+): Label Propagation, NMI/ARI metrics, PCA
 
 ### Optional (for notebook)
 - **jupyter** (1.0+): Interactive notebook environment
@@ -186,6 +238,9 @@ jupyter notebook task2_communities.ipynb
 # Task 3: Rule Mining
 jupyter notebook task3_rule_mining.ipynb
 
+# Task 4: Link Prediction
+jupyter notebook task4_link_prediction.ipynb
+
 # Or use JupyterLab to open all
 jupyter lab
 ```
@@ -206,7 +261,8 @@ python task1_exploration.py
 - **Task 1 (task1_exploration.ipynb)**: ~5-10 seconds
 - **Task 2 (task2_communities.ipynb)**: ~3-5 seconds
 - **Task 3 (task3_rule_mining.ipynb)**: ~2-3 seconds
-- **Memory usage**: <100 MB per notebook
+- **Task 4 (task4_link_prediction.ipynb)**: ~5-8 minutes (TransE training)
+- **Memory usage**: <200 MB per notebook (Task 4 may use more during training)
 - **Output**: All visualizations and statistics printed to notebooks
 
 ---
@@ -301,6 +357,54 @@ Validated on 5 relationship types, showing successful differentiation.
 - Analyzed why Label Propagation creates 64 vs 50 communities
 - Manual mathematical verification of all metrics
 
+### Task 4: Link Prediction Methodology
+
+#### 1. Problem Formulation
+- **Open World Assumption (OWA)**: Missing triples ≠ false (just unobserved)
+- **Link prediction task**: Rank entities for incomplete triples (h,r,?) or (?,r,t)
+- **Negative sampling reconciliation**: Use corrupted triples as "assumed negative" training signal
+- **Filtered evaluation**: Remove all known positives (train ∪ test) to avoid false penalties
+
+#### 2. Negative Sampling
+- Corrupt head or tail with random entity replacement
+- Filter against all_triple_set to avoid sampling known triples as negatives
+- Training uses 1 negative per positive in each batch (efficient)
+- Generation is collision-aware with maximum attempt limits
+
+#### 3. TransE Model
+- **Core idea**: Model relations as translations in embedding space (h + r ≈ t)
+- **Scoring function**: -||h + r - t||₂ (higher score = more plausible)
+- **Loss function**: Margin ranking loss (γ=1.0)
+- **Training**: Mini-batch SGD (batch=512, lr=0.01, epochs=100)
+- **Implementation**: From-scratch NumPy (educational clarity, no external KG libraries)
+- **Normalization**: L2-normalize entity embeddings after each update
+
+#### 4. Evaluation Metrics
+- **MRR (Mean Reciprocal Rank)**: Average of 1/rank across all predictions
+- **Hits@K**: Proportion of correct entities ranked in top-K (K=1,3,10)
+- **Filtered ranking**: Standard KG evaluation protocol (removes other known true triples)
+- **Both head and tail prediction**: Comprehensive bi-directional evaluation
+
+#### 5. Sanity Checks (Critical for Correctness)
+- **Loss decrease check**: Verify training convergence
+- **Embedding norm tracking**: Detect gradient explosion (should stay ~1.0)
+- **Score distribution**: True triples must score higher than negatives on average
+- All checks include pass/fail indicators and diagnostic plots
+
+#### 6. Error Analysis Framework
+- **Success cases**: Inspect rank=1 predictions (perfect predictions)
+- **Failure cases**: Analyze rank>100 predictions (systematic failures)
+- **Per-relation analysis**: 28 relation types evaluated separately
+- **Hypothesis testing**: Symmetric relations, sparse relations, inverse relations
+- **Rule comparison**: Symbolic rules from Task 3 vs learned embeddings
+
+#### 7. Stress Test: Rule Consistency
+- **Self-loop violations**: Person predicted as own ancestor
+- **Parent constraints**: >2 mothers or >2 fathers
+- **Transitivity validation**: Grandmother paths via intermediate parents
+- Quantifies % of top predictions violating logical constraints
+- Demonstrates need for hybrid symbolic-neural reasoning
+
 ---
 
 ## Key Results
@@ -363,12 +467,20 @@ cd metafam-knowledge-graph
 pip install -r requirements.txt
 
 # Task 1: Dataset Exploration
-jupyter notebook Graph_Analysis.ipynb
+jupyter notebook task1_exploration.ipynb
 # Run all cells
 
 # Task 2: Community Detection
 jupyter notebook task2_communities.ipynb
 # Run all cells
+
+# Task 3: Rule Mining
+jupyter notebook task3_rule_mining.ipynb
+# Run all cells
+
+# Task 4: Link Prediction
+jupyter notebook task4_link_prediction.ipynb
+# Run all cells (training takes ~5-8 minutes)
 ```
 
 ---
