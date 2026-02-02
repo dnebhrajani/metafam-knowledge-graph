@@ -19,7 +19,7 @@ metafam-knowledge-graph/
 ├── test.txt                      # Test dataset (590 relationships)
 ├── README.md                     # This file
 ├── requirements.txt              # Python dependencies
-└── TECHNICAL_REPORT.md           # Comprehensive technical documentation
+└── REPORT.md                     # Project report
 ```
 
 ---
