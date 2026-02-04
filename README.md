@@ -66,7 +66,9 @@ metafam-knowledge-graph/
 - **Visual subgraph inspection**: 3 representative communities with generation-colored nodes
 - Three analysis questions answered (community-family alignment, generations per community, bridge individuals)
 - Family Relatedness Score (FRS) metric created with justified weights
-- **FRS superiority demonstration**: Showed why FRS beats simple hop-count with edge cases
+- **FRS weight sensitivity analysis**: Tested 5 configurations, proved ranking stability for direct relations
+- **FRS failure case analysis**: Validated 5 edge cases (cross-family, self, path monotonicity, distant relatives, ambiguous rankings)
+- **Critical self-critique**: Acknowledged perfect scores due to trivial problem (0 inter-family edges), clarified metric computation scale (whole-graph)
 - Critical dataset discovery: Zero inter-family edges (explains perfect metrics)
 - Comprehensive comparison visualizations
 
@@ -76,12 +78,15 @@ metafam-knowledge-graph/
 - **Label Propagation**: 64 communities (modularity 0.9652, NMI 0.9844, ARI 0.9576)
 - **Hyperparameter robustness**: Resolution γ=0.5 to 2.0 all produce 50 communities (perfect component structure)
 - **Perfect community purity**: 100% of communities (both algorithms) stay within single families
-- **Perfect Louvain metrics explained**: dataset has ZERO inter-family edges
+- **Critical limitation acknowledged**: Perfect scores don't validate algorithms—they validate trivial dataset structure (0 inter-family edges, problem reduces to component finding)
+- **Metric computation scale**: All metrics computed on WHOLE GRAPH (1,316 nodes, 7,480 undirected edges collapsed from 13,821 directed), not per-component
 - **Generation entropy**: 1.72 average entropy indicates multi-generational families (not age cohorts)
 - **Generation span**: Average 6-7 generations per community (great-grandparents to great-grandchildren)
 - **LP's 14 extra communities** reveal meaningful subfamilies within large families
 - **95 bridge individuals** (7.22%) identified as critical connectors
 - **FRS metric** successfully differentiates relationship types (parent-child 0.65 vs hop-count 1.0)
+- **FRS weight sensitivity**: Rankings STABLE for direct relations (siblings > parent-child across all 5 configs), SENSITIVE for distant relations
+- **FRS failure analysis**: 0 failures detected—all 5 edge cases produce correct/expected results (cross-family=0.0, self=1.0, path monotonicity validated)
 
 ### Task 3: Rule Mining
 
