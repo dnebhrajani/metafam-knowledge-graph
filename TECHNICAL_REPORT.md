@@ -96,6 +96,36 @@ This framing acknowledges that "perfect" community detection may not exist for f
 
 **Key Results**: All 10 composition rules achieve 100% confidence - signature of synthetic/deterministic KG construction. Support vs confidence plot shows perfect horizontal line at 1.0 (synthetic data fingerprint). Tested 6 failed rules (0-62% confidence) proving thorough exploration. Grandparent rules (support 309-338), aunt/uncle rules (support 178-253), great-grandparent rules (support 256-287). Inverse rules show 30-43% confidence. Critical insight: MetaFam is rule-generated, not real-world curated data.
 
+## 1. Problem Definition & Motivation
+
+### Why Rule Mining Matters
+
+Knowledge graphs encode **logical structure** that goes beyond statistical patterns. While machine learning models can discover correlations, **rule mining reveals explainable, symbolic reasoning** that humans can verify and trust.
+
+### Rules ≠ Statistics
+
+- **Statistical models** learn: "40% of people with property P also have property Q"
+- **Logical rules** capture: "IF X is Y's mother AND Y is Z's father THEN X must be Z's grandmother"
+
+The key difference: **rules are compositional, interpretable, and logically guaranteed** (when they hold).
+
+### Family Relationships: A Rich Domain for Symbolic Reasoning
+
+Family knowledge graphs are ideal for rule discovery because:
+1. **Deterministic constraints**: biological relationships follow strict rules
+2. **Compositional structure**: complex relationships decompose into simpler ones
+3. **Verifiable ground truth**: humans can validate rule correctness intuitively
+
+### Applications of Discovered Rules
+
+Mined rules enable:
+- **Knowledge graph completion**: infer missing edges using symbolic reasoning
+- **Constraint checking**: detect inconsistencies in KG construction
+- **Explainable link prediction**: provide human-interpretable justifications for predictions
+- **Hybrid AI systems**: combine neural networks with symbolic priors
+
+This task discovers logical patterns in MetaFam, quantifies their reliability, and analyzes when/why they fail.
+
 ---
 
 # TASK 4: LINK PREDICTION
