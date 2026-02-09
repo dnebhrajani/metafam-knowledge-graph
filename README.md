@@ -24,216 +24,97 @@ metafam-knowledge-graph/
 
 ---
 
-## Task Completion Status
+## How to Run
 
-### Task 1: Dataset Exploration
-
-**What was completed:**
-- Comprehensive dataset loading and exploration
-- Statistical analysis: 1,316 people, 28 relationship types, 50 family components
-- Graph construction and network analysis (density, diameter, clustering, path lengths)
-- Multiple centrality measures (Degree, Betweenness, Closeness, PageRank)
-- Generation identification (7-level hierarchy detected)
-- Articulation point analysis (95 critical connectors)
-- Multiple visualizations:
-  - Relationship type distribution
-  - Degree distributions (in/out/total)
-  - Hierarchical family structure graph
-  - Centrality comparison charts
-- Anomaly detection with 5 hypothesis tests
-- Mathematical verification of all graph-theoretic claims
-- Comprehensive insights summary (200+ lines)
-
-**Key Findings:**
-- Small-world network properties (high clustering 0.84, short paths 1.47)
-- 7 generations detected (3 up, 3 down, 1 ego)
-- 17.5% relationship redundancy (inverse pairs)
-- Suspicious uniform component sizes suggest synthetic/constrained data
-- 6 universally important nodes across all centrality measures
-
-### Task 2: Community Detection
-**What was completed:**
-- **Problem framing**: Explicit definition of clustering task, acknowledged genealogical ambiguity
-- **Data preparation**: Documented undirected graph conversion, edge collapse strategy
-- Two complementary algorithms implemented (Louvain, Label Propagation)
-- **Hyperparameter exploration**: Tested 6 resolution values (0.5-2.0), validated default choice
-- **Random baseline comparison**: Demonstrated 417,000%+ improvement over random clustering
-- Five evaluation metrics (Modularity, NMI, ARI, Coverage, Conductance)
-- Algorithm selection justified (complexity analysis, theoretical basis)
-- Mathematical verification (manual modularity calculation, graph theory validation)
-- **Structural evaluation**: Component-community overlap analysis (100% pure communities)
-- **Generation entropy analysis**: Calculated information entropy (~1.72) showing multi-generational families
-- **Visual subgraph inspection**: 3 representative communities with generation-colored nodes
-- Three analysis questions answered (community-family alignment, generations per community, bridge individuals)
-- Family Relatedness Score (FRS) metric created with justified weights
-- **FRS weight sensitivity analysis**: Tested 5 configurations, proved ranking stability for direct relations
-- **FRS failure case analysis**: Validated 5 edge cases (cross-family, self, path monotonicity, distant relatives, ambiguous rankings)
-- **Critical self-critique**: Acknowledged perfect scores due to trivial problem (0 inter-family edges), clarified metric computation scale (whole-graph)
-- Critical dataset discovery: Zero inter-family edges (explains perfect metrics)
-- Comprehensive comparison visualizations
-
-**Key Findings:**
-- **Random baseline**: 0.0002 modularity (essentially random) vs 0.9794 Louvain (417,000%+ improvement)
-- **Louvain**: 50 communities (modularity 0.9794, NMI 1.0000, ARI 1.0000)
-- **Label Propagation**: 64 communities (modularity 0.9652, NMI 0.9844, ARI 0.9576)
-- **Hyperparameter robustness**: Resolution γ=0.5 to 2.0 all produce 50 communities (perfect component structure)
-- **Perfect community purity**: 100% of communities (both algorithms) stay within single families
-- **Critical limitation acknowledged**: Perfect scores don't validate algorithms—they validate trivial dataset structure (0 inter-family edges, problem reduces to component finding)
-- **Metric computation scale**: All metrics computed on WHOLE GRAPH (1,316 nodes, 7,480 undirected edges collapsed from 13,821 directed), not per-component
-- **Generation entropy**: 1.72 average entropy indicates multi-generational families (not age cohorts)
-- **Generation span**: Average 6-7 generations per community (great-grandparents to great-grandchildren)
-- **LP's 14 extra communities** reveal meaningful subfamilies within large families
-- **95 bridge individuals** (7.22%) identified as critical connectors
-- **FRS metric** successfully differentiates relationship types (parent-child 0.65 vs hop-count 1.0)
-- **FRS weight sensitivity**: Rankings STABLE for direct relations (siblings > parent-child across all 5 configs), SENSITIVE for distant relations
-- **FRS failure analysis**: 0 failures detected—all 5 edge cases produce correct/expected results (cross-family=0.0, self=1.0, path monotonicity validated)
-
-### Task 3: Rule Mining
-
-**What was completed:**
-- Symbolic rule discovery using path enumeration approach
-- 10 composition rules evaluated (2-hop Horn clauses)
-- 4 inverse rules tested (parent↔child inversions)
-- 3 multi-hop rules discovered (3-hop great-grandparent chains)
-- Support and confidence metrics calculated for all rules
-- Concrete examples extracted from actual dataset entities
-- Failure analysis with hypothesized causes
-- Rule quality improvement strategies proposed
-- Visualization of rule confidence distribution
-- Connection to link prediction (Task 4) established
-
-**Key Findings:**
-- **All 10 composition rules: 100% confidence** - signature of synthetic/deterministic data generation
-- **Critical insight**: Horizontal line in support vs confidence plot reveals MetaFam is synthetically constructed
-- **Grandparent rules**: 100% confidence (4 rules with support 309-338)
-- **Aunt/Uncle rules**: 100% confidence (4 rules with support 178-253)
-- **Great-grandparent rules**: 100% confidence (2 rules with support 256-287)
-- **Failed rule attempts**: 6 rules tested with 0-62% confidence (proves thorough exploration)
-- **Inverse rules**: 30-43% confidence (asymmetric recording bias)
-- **Average confidence**: 100% for composition rules, ~36% for inverse rules
-- **Symbolic constraints**: 10 deterministic rules form hard priors for link prediction
-
-### Task 4: Link Prediction
-
-**What was completed:**
-- Problem formulation with Open World Assumption (OWA) clarification
-- Dataset preparation: train.txt (13,821 triples), test.txt (590 triples)
-- Negative sampling strategy with OWA reconciliation
-- Baseline models: Random baseline, degree-based heuristic
-- TransE implementation from scratch (NumPy)
-  - Translation-based scoring: h + r ≈ t
-  - Margin ranking loss with mini-batch SGD
-  - 100 epochs training (embedding dim=100, margin=1.0, lr=0.01)
-- Comprehensive training sanity checks:
-  - Loss decrease verification (with plot)
-  - Embedding norm tracking (gradient explosion check)
-  - Score distribution analysis (true vs negative triples)
-- Evaluation metrics: MRR, Hits@1, Hits@3, Hits@10 (filtered ranking)
-- Filtered ranking correctly filters train ∪ test
-- Quantitative results with baseline comparison
-- Deep error analysis:
-  - Rank distribution visualization
-  - Success cases (rank=1 predictions)
-  - Failure cases (rank>100 with hypotheses)
-  - Performance by relation type (28 relations analyzed)
-  - Hypothesis testing: symmetric relations, sparse relations
-- Rule-based comparison (symbolic vs neural reasoning)
-- Stress test experiment: Rule consistency check
-  - Self-loop violations detection
-  - Parent constraint violations (>2 mothers/fathers)
-  - Transitivity rule validation (grandmother paths)
-- Visualization suite:
-  - Training loss curve
-  - Embedding norm distribution
-  - Score distribution (model calibration)
-  - Per-relation performance (horizontal bar charts)
-  - PCA embeddings (entities and relations)
-- Connections to Tasks 1-3 integrated throughout
-- Scalability analysis and future directions
-
-**Key Findings:**
-- TransE significantly outperforms random baseline (results vary by run)
-- Symmetric relations (sisterOf, brotherOf) perform worse (confirmed hypothesis)
-- Sparse relations perform worse due to limited training data (confirmed hypothesis)
-- Missing inverse relations (82.5% from Task 1) impact embedding quality
-- Stress test reveals logical constraint violations in top predictions
-- Pure embedding methods ignore compositional structure - hybrid symbolic-neural approach needed
-- Model achieves stable training: loss decreases consistently, embeddings remain normalized
-- Filtered ranking essential: prevents false penalties for ranking unobserved true facts
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/dnebhrajani/metafam-knowledge-graph.git
+   cd metafam-knowledge-graph
+   ```
+2. **Create a virtual environment:**
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+3. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. **Open the notebooks in Jupyter:**
+   ```bash
+   jupyter notebook
+   # or
+   jupyter lab
+   ```
+5. **Run all cells in each notebook to reproduce results.**
 
 ---
 
-## Installation & Setup
+## Dependency Libraries
+- pandas
+- numpy
+- networkx
+- matplotlib
+- seaborn
+- community (python-louvain)
+- scikit-learn
+- scipy
+- tqdm
 
-### Prerequisites
-- Python 3.8 or higher
-- Jupyter Notebook or JupyterLab
-- Git
+---
 
-### Step 1: Clone the Repository
+## Transparency
+- All experiments and results are in Jupyter notebooks, with code, outputs, and markdown explanations in each cell.
+- Each task (exploration, community detection, rule mining, link prediction) is a separate notebook.
+- All outcomes are transparent, reproducible, and traceable within the notebooks.
+- No results are hidden or post-processed outside the notebooks.
 
+---
+
+## Project Highlights
+- **Task 1:** Full dataset exploration, graph metrics, 7 centrality/importance measures, generation detection, articulation points, anomaly tests, and mathematical verification.
+- **Task 2:** Community detection (Louvain, Label Propagation), evaluation metrics, FRS metric, honest critique of trivial structure, and subfamily analysis.
+- **Task 3:** Rule mining (10 perfect composition rules, 4 inverse, 3 multi-hop), support/confidence, concrete examples, failure analysis, and improvement strategies.
+- **Task 4:** Link prediction (TransE from scratch, rule-based baseline, neurosymbolic evaluation), full training, evaluation, error analysis, and stress tests.
+
+---
+
+## Reproducibility
+
+- All code and results are in the notebooks.
+- All experiments are reproducible by running the notebooks from top to bottom.
+- The codebase is modular and well-commented for clarity.
+
+
+To reproduce:
 ```bash
 git clone https://github.com/dnebhrajani/metafam-knowledge-graph.git
 cd metafam-knowledge-graph
-```
-
-### Step 2: Create Virtual Environment (Recommended)
-
-```bash
-# Create virtual environment
-python -m venv venv
-
-# Activate virtual environment
-# On macOS/Linux:
-source venv/bin/activate
-# On Windows:
-venv\Scripts\activate
-```
-
-### Step 3: Install Dependencies
-
-```bash
 pip install -r requirements.txt
+
+# Task 1: Dataset Exploration
+jupyter notebook task1_exploration.ipynb
+# Run all cells
+
+# Task 2: Community Detection
+jupyter notebook task2_communities.ipynb
+# Run all cells
+
+# Task 3: Rule Mining
+jupyter notebook task3_rule_mining.ipynb
+# Run all cells
+
+# Task 4: Link Prediction
+jupyter notebook task4_link_prediction.ipynb
+# Run all cells (training takes ~5-8 minutes)
 ```
 
 ---
 
-## Dependencies
-
-The project uses the following Python libraries:
-
-### Core Libraries
-- **pandas** (2.0+): Data manipulation and analysis
-- **numpy** (1.24+): Numerical computing
-- **networkx** (3.1+): Graph creation and analysis
-
-### Visualization
-- **matplotlib** (3.7+): Plotting and visualization
-- **seaborn** (0.12+): Statistical data visualization
-
-### Progress Bars
-- **tqdm** (4.65+): Progress bars for training loops
-
-### Statistical Analysis
-- **scipy** (1.10+): Scientific computing and statistical tests
-
-### Community Detection (Task 2)
-- **python-louvain** (0.15+): Louvain modularity optimization
-- **scikit-learn** (1.3+): Label Propagation, NMI/ARI metrics, PCA
-
-### Optional (for notebook)
-- **jupyter** (1.0+): Interactive notebook environment
-- **ipykernel**: Jupyter kernel for Python
-
-All dependencies are listed in `requirements.txt` for easy installation.
-
 ---
 
-## Running the Analysis
+## References
 
-### Option 1: Run Complete Notebook
-
-```bash
 # Task 1: Dataset Exploration
 jupyter notebook task1_exploration.ipynb
 
@@ -262,17 +143,11 @@ jupyter nbconvert --to script task1_exploration.ipynb
 python task1_exploration.py
 ```
 
-### Expected Runtime
-- **Task 1 (task1_exploration.ipynb)**: ~5-10 seconds
-- **Task 2 (task2_communities.ipynb)**: ~3-5 seconds
-- **Task 3 (task3_rule_mining.ipynb)**: ~2-3 seconds
-- **Task 4 (task4_link_prediction.ipynb)**: ~5-8 minutes (TransE training)
-- **Memory usage**: <200 MB per notebook (Task 4 may use more during training)
-- **Output**: All visualizations and statistics printed to notebooks
-
 ---
 
 ## Methodology & Approach
+
+### Task 1: Dataset Exploration Methodology
 
 ### 1. Data Loading & Exploration
 - Load train.txt (13,821 edges) using pandas
@@ -281,7 +156,7 @@ python task1_exploration.py
 
 ### 2. Graph Construction
 - **Choice**: NetworkX DiGraph (directed graph)
-- **Rationale**: Family relationships are directional (motherOf ≠ childOf)
+- **Rationale**: Family relationships are directional (motherOf != childOf)
 - Build graph with edges labeled by relationship type
 
 ### 3. Network Analysis
@@ -291,7 +166,7 @@ python task1_exploration.py
 - **Components**: 50 disconnected families
 - **Diameter**: 3 (maximum separation)
 - **Average path length**: 1.47 (highly connected)
-- **Clustering coefficient**: 0.84 (tight-knit families)
+- **Clustering coefficient**: 0.79 (tight-knit families)
 
 #### Centrality Measures
 - **Degree Centrality**: O(n) - Most connected nodes
@@ -309,7 +184,7 @@ Five hypothesis tests performed:
 1. **Cycle detection**: Validated DAG structure (except symmetric edges)
 2. **Biological constraints**: No >2 parent violations found
 3. **Component uniformity**: Chi-square test reveals synthetic data
-4. **Missing inverses**: 82.5% lack inverse (single-perspective recording)
+4. **Missing inverses**: 64.4% lack inverse (single-perspective recording)
 5. **Generation consistency**: Many grandparent links lack intermediate nodes
 
 ### 5. Visualization Strategy
@@ -365,7 +240,7 @@ Validated on 5 relationship types, showing successful differentiation.
 ### Task 4: Link Prediction Methodology
 
 #### 1. Problem Formulation
-- **Open World Assumption (OWA)**: Missing triples ≠ false (just unobserved)
+- **Open World Assumption (OWA)**: Missing triples != false (just unobserved)
 - **Link prediction task**: Rank entities for incomplete triples (h,r,?) or (?,r,t)
 - **Negative sampling reconciliation**: Use corrupted triples as "assumed negative" training signal
 - **Filtered evaluation**: Remove all known positives (train ∪ test) to avoid false penalties
@@ -390,7 +265,7 @@ Validated on 5 relationship types, showing successful differentiation.
 - **Filtered ranking**: Standard KG evaluation protocol (removes other known true triples)
 - **Both head and tail prediction**: Comprehensive bi-directional evaluation
 
-#### 5. Sanity Checks (Critical for Correctness)
+#### 5. Sanity Checks
 - **Loss decrease check**: Verify training convergence
 - **Embedding norm tracking**: Detect gradient explosion (should stay ~1.0)
 - **Score distribution**: True triples must score higher than negatives on average
@@ -411,166 +286,6 @@ Validated on 5 relationship types, showing successful differentiation.
 - Demonstrates need for hybrid symbolic-neural reasoning
 
 ---
-
-## Key Results
-
-### Important Nodes Identified
-**Top 6 universally important individuals** (appear in top-10 of all centrality measures):
-- lisa5, isabella11, elias6, nico4, oskar24, selina10
-
-### Network Properties
-- **Small-world structure**: High clustering + short paths
-- **Scale-free characteristics**: Hub-based family organization
-- **95 articulation points**: Critical connectors (7.2% of population)
-
-### Data Quality Insights
-- **HIGH-QUALITY**: 17.5% inverse validation shows consistency
-- **INCOMPLETE**: 82.5% missing inverses, gaps in intermediate nodes
-- **CONSTRAINED**: Uniform component sizes (26-27 people) suggest synthetic generation
-
-### Task 2 Results: Community Detection
-
-**Algorithm Performance:**
-- **Louvain**: 50 communities, modularity 0.9794, NMI 1.0000, ARI 1.0000
-- **Label Propagation**: 64 communities, modularity 0.9652, NMI 0.9844, ARI 0.9576
-
-**Critical Discovery:**
-- Dataset has **ZERO inter-family edges** (completely disconnected components)
-- This explains "perfect" Louvain metrics (trivially rediscovers components)
-- Label Propagation's 14 extra communities reveal meaningful subfamilies
-
-**Generations per Community:**
-- Average: 4.14 generations per community
-- Most communities span 3-5 generations
-- Confirms multi-generational family structures
-
-**Bridge Individuals:**
-- 95 articulation points identified (7.22% of network)
-- Primarily cousins (50.5%) and grandparents (31.6%)
-- Removing them would disconnect family branches
-
-**FRS Metric Validation:**
-- Successfully differentiates relationships: parent-child (0.60) > grandparent-grandchild (0.50) > cousin (0.35)
-- Weights justified: path most reliable (0.4), community/ancestry equal secondary (0.3 each)
-- Limitations identified: sensitive to community detection errors
-
----
-
-## Reproducibility
-
-All results in the notebook are fully reproducible:
-
-1. **Random seeds set**: For consistent sampling in verification
-2. **Deterministic algorithms**: NetworkX algorithms are deterministic
-3. **Logged outputs**: Every computation has printed results
-4. **Version controlled**: All code tracked in Git
-
-To reproduce:
-```bash
-git clone https://github.com/dnebhrajani/metafam-knowledge-graph.git
-cd metafam-knowledge-graph
-pip install -r requirements.txt
-
-# Task 1: Dataset Exploration
-jupyter notebook task1_exploration.ipynb
-# Run all cells
-
-# Task 2: Community Detection
-jupyter notebook task2_communities.ipynb
-# Run all cells
-
-# Task 3: Rule Mining
-jupyter notebook task3_rule_mining.ipynb
-# Run all cells
-
-# Task 4: Link Prediction
-jupyter notebook task4_link_prediction.ipynb
-# Run all cells (training takes ~5-8 minutes)
-```
-
----
-
-## Performance & Scalability
-
-### Current Performance
-- **Nodes**: 1,316
-- **Edges**: 13,821
-- **Runtime**: <5 seconds
-- **Memory**: <100 MB
-
-### Scalability Limits
-- **10x scale** (130K edges): NetworkX sufficient
-- **100x scale** (1.3M edges): Need betweenness sampling
-- **1000x scale** (13M edges): Switch to igraph/graph-tool
-- **Web scale** (1B+ edges): Distributed computing (Spark GraphX)
-
----
-
-## Limitations & Future Work
-
-### Current Limitations
-1. **Static analysis**: No temporal dynamics (births/deaths over time)
-2. **Binary relationships**: No relationship strength/frequency modeling
-3. **Missing data**: 82.5% inverse relationships not recorded
-4. **No cross-family links**: Dataset contains only intra-family relationships (no edges between the 50 families)
-
-### Future Extensions
-1. **Temporal analysis**: If timestamps available
-2. **Probabilistic modeling**: Handle uncertainty in relationships
-3. **Advanced visualizations**: Interactive tools and time-series animations
-
----
-
-## Citation & References
-
-### Dataset
-- MetaFam Knowledge Graph (Precog recruitment task)
-- Format: Space-separated triples (head, relation, tail)
-
-### Tools & Libraries
-- NetworkX: Hagberg, A., Schult, D., & Swart, P. (2008). "Exploring network structure, dynamics, and function using NetworkX."
-- Python Scientific Stack: NumPy, pandas, matplotlib, scipy
-
-### Graph Theory Concepts
-- Centrality measures: Freeman (1978), Page et al. (1999)
-- Small-world networks: Watts & Strogatz (1998)
-- Articulation points: Hopcroft & Tarjan (1973)
-
----
-
-## Scalability Considerations
-
-### Current Performance
-- **Dataset**: 1,316 nodes, 13,821 edges
-- **Runtime**: <5 seconds total
-- **Memory**: ~4 MB
-- **Bottleneck**: Betweenness centrality O(n³)
-
-### Scaling to Larger Graphs
-
-**10x Scale (130K edges)**:
-- NetworkX remains viable
-- Sample betweenness centrality (10% sample, extrapolate)
-- Estimated runtime: 5-10 minutes
-
-**100x Scale (1.3M edges)**:
-- Switch to igraph (10-100x faster than NetworkX)
-- Use approximate algorithms (Brandes approximation, HyperANF)
-- Parallel processing with multiprocessing
-- Estimated runtime: 10-30 minutes
-
-**1000x Scale (13M edges)**:
-- Distributed computing required (Apache Spark GraphX)
-- Graph databases for storage (Neo4j)
-- Approximate centrality algorithms mandatory
-- Graph partitioning (METIS)
-- Estimated runtime: 1-3 hours on cluster
-
-### Sampling Strategies
-- **Random node sampling**: 10% sample preserves degree distribution
-- **BFS sampling**: Preserves local structure from seed nodes
-- **Forest Fire sampling**: Captures community structure (recommended)
-- **Snowball sampling**: K-hop neighborhoods for ego networks
 
 ### Memory Optimization
 - Sparse matrix representation (scipy.sparse saves 90% memory)
